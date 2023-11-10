@@ -3,11 +3,19 @@ package org.example.functions;
 import java.util.*;
 import com.microsoft.azure.functions.annotation.*;
 import com.microsoft.azure.functions.*;
+import org.example.services.GreetingService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * Azure Functions with HTTP Trigger.
  */
+@Component
 public class HttpTriggerJava {
+
+    @Autowired
+    private GreetingService greetingService;
+
     /**
      * This function listens at endpoint "/api/HttpTriggerJava". Two ways to invoke it using "curl" command in bash:
      * 1. curl -d "HTTP Body" {your host}/api/HttpTriggerJava
@@ -26,7 +34,9 @@ public class HttpTriggerJava {
         if (name == null) {
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST).body("Please pass a name on the query string or in the request body").build();
         } else {
-            return request.createResponseBuilder(HttpStatus.OK).body("Hello, " + name).build();
+            String greetingResult = greetingService.greet(name);
+            greetingService.setSalutation("Hello there");
+            return request.createResponseBuilder(HttpStatus.OK).body(greetingResult).build();
         }
     }
 }
